@@ -9,10 +9,10 @@ import { useAuth } from "@/store/slices/authSlice";
 import Link from "next/link";
 
 export default function ProfileForm() {
-  const { user } = useSelector((state) => state?.auth);
-  const { loginAction } = useAuth();
+  const { user, token } = useSelector((state) => state?.auth);
+  const { profileUpdateAction } = useAuth();
 
-  const { formData, errors, setFormData, touched, handleChange, handleFocus, handleSubmit } = useForm(
+  const { formData, errors, setFormData, touched, handleChange, handleFocus, handleSubmit, isFormValid } = useForm(
     {
       fullname: "",
     },
@@ -31,10 +31,9 @@ export default function ProfileForm() {
   const handleFormSubmit = async (e) => {
     e.preventDefault();
     await handleSubmit(async () => {
-      console.log(formData);
       const { success, user } = await updateProfileService(formData);
       if (success && user) {
-        loginAction({ user: user });
+        profileUpdateAction({ user: user });
       }
     });
   };
@@ -53,7 +52,9 @@ export default function ProfileForm() {
           touched={touched?.fullname}
           errors={errors?.fullname}
         />
-        <button type="submit">Update</button>
+        <button type="submit" disabled={!isFormValid}>
+          Update
+        </button>
       </form>
     </div>
   );

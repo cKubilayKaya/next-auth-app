@@ -24,6 +24,9 @@ const authSlice = createSlice({
       state.isAuthenticated = true;
       document.cookie = `token=${action.payload.token}; path=/; max-age=${process.env.TOKEN_EXPIRATION}; SameSite=Strict`;
     },
+    profileUpdate: (state, action) => {
+      state.user = action.payload.user;
+    },
     logout: (state) => {
       state.user = null;
       state.token = null;
@@ -33,7 +36,7 @@ const authSlice = createSlice({
   },
 });
 
-export const { login, register, logout } = authSlice.actions;
+export const { login, register, profileUpdate, logout } = authSlice.actions;
 
 export const useAuth = () => {
   const dispatch = useDispatch();
@@ -50,12 +53,18 @@ export const useAuth = () => {
     },
     [dispatch]
   );
+  const profileUpdateAction = useCallback(
+    (userData) => {
+      dispatch(profileUpdate(userData));
+    },
+    [dispatch]
+  );
 
   const logoutAction = useCallback(() => {
     dispatch(logout());
   }, [dispatch]);
 
-  return { loginAction, logoutAction, registerAction };
+  return { loginAction, logoutAction, registerAction, profileUpdateAction };
 };
 
 export default authSlice.reducer;

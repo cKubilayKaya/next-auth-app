@@ -2,13 +2,13 @@
 import React, { useEffect, useState } from "react";
 import useForm from "../../hooks/useForm";
 import Input from "../Input";
-import { emailVerifyService, resendEmailService } from "@/services/authService";
+import { changePasswordService, emailVerifyService, forgotPasswordService, resendEmailService } from "@/services/authService";
 import { useSelector } from "react-redux";
 import { useRouter } from "next/navigation";
-import emailVerifySchema from "@/validations/emailVerifySchema";
 import SendNewEmailCode from "../SendNewEmailCode";
+import changePasswordSchema from "@/validations/changePasswordSchema";
 
-export default function EmailVerifyForm() {
+export default function ChangePasswordForm() {
   const { user } = useSelector((state) => state?.auth);
   const [resendCodeStatus, setResendCodeStatus] = useState({});
   const [count, setCount] = useState();
@@ -19,19 +19,21 @@ export default function EmailVerifyForm() {
   const { formData, errors, setFormData, touched, handleChange, handleFocus, handleSubmit } = useForm(
     {
       email: "",
-      emailVerificationCode: "",
+      code: "",
+      password: "",
+      rePassword: "",
     },
-    emailVerifySchema
+    changePasswordSchema
   );
 
-  const resendEmailHandle = () => {
+  const forgotPasswordHandle = () => {
     let emailData = localStorage.getItem("email");
 
     const resendEmail = async () => {
       try {
-        const res = await resendEmailService({ email: emailData });
+        const res = await forgotPasswordService({ email: emailData });
         setResendCodeStatus(res);
-        if (res?.success && res?.message === "Verification code be sent!") {
+        if (res?.success && res?.message === "Password reset code sent successfully!") {
           setCount(60);
         }
       } catch (error) {
@@ -51,13 +53,11 @@ export default function EmailVerifyForm() {
         ...prev,
         email: emailData,
       }));
-
-      // resendEmailHandle();
     }
   }, [user]);
 
   useEffect(() => {
-    resendEmailHandle();
+    forgotPasswordHandle();
   }, [user]);
 
   useEffect(() => {
@@ -73,8 +73,8 @@ export default function EmailVerifyForm() {
   const handleFormSubmit = async (e) => {
     e.preventDefault();
     await handleSubmit(async () => {
-      const { success, user } = await emailVerifyService(formData);
-      if (success && user) {
+      const { success } = await changePasswordService(formData);
+      if (success) {
         setSuccessMessage(true);
         setTimeout(() => {
           router?.push("/login");
@@ -85,21 +85,41 @@ export default function EmailVerifyForm() {
 
   return (
     <div className="container">
-      <SendNewEmailCode resendCodeStatus={resendCodeStatus} count={count} resendEmailHandle={resendEmailHandle} />
-      <h2 className="title">Email Verify</h2>
+      <SendNewEmailCode resendCodeStatus={resendCodeStatus} count={count} forgotPasswordHandle={forgotPasswordHandle} />
+      <h2 className="title">Change Password</h2>
       <form onSubmit={handleFormSubmit}>
         <Input
           type="text"
-          placeholder="Email Verification Code"
-          name="emailVerificationCode"
-          value={formData.emailVerificationCode}
+          placeholder="Code"
+          name="code"
+          value={formData.code}
           onChange={handleChange}
           onFocus={handleFocus}
-          touched={touched?.emailVerificationCode}
-          errors={errors?.emailVerificationCode}
+          touched={touched?.code}
+          errors={errors?.code}
         />
-        {successMessage && <p className="email-verified">Email verified! You are gonna redirect to login page.</p>}
-        <button type="submit">Verify</button>
+        <Input
+          type="password"
+          placeholder="Password"
+          name="password"
+          value={formData.password}
+          onChange={handleChange}
+          onFocus={handleFocus}
+          touched={touched?.password}
+          errors={errors?.password}
+        />
+        <Input
+          type="password"
+          placeholder="Re-Password"
+          name="rePassword"
+          value={formData.rePassword}
+          onChange={handleChange}
+          onFocus={handleFocus}
+          touched={touched?.rePassword}
+          errors={errors?.rePassword}
+        />
+        {successMessage && <p className="email-verified">Password changed! You are gonna redirect to login page.</p>}
+        <button type="submit">Send</button>
       </form>
     </div>
   );

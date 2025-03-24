@@ -53,3 +53,21 @@ export const resendEmailService = async (data) => {
     throw error;
   }
 };
+
+export const forgotPasswordService = async (data) => {
+  try {
+    const res = await axiosInstance.post("/auth/forgot-password", data);
+    return res.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const changePasswordService = async (data) => {
+  try {
+    const res = await axiosInstance.post("/auth/change-password", data);
+    return res.data;
+  } catch (error) {
+    throw error;
+  }
+};
