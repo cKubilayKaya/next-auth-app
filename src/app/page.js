@@ -3,16 +3,21 @@ import Link from "next/link";
 import { useSelector } from "react-redux";
 
 export default function Home() {
-  const { isAuthenticated } = useSelector((state) => state.auth);
+  const { isAuthenticated, user } = useSelector((state) => state.auth);
+
   return (
     <div>
-      <Link href="/login">Login</Link>
-      <br />
-      <br />
-      <Link href="/register">Register</Link>
-      <br />
-      <br />
-      {isAuthenticated && <Link href="/profile">Profile</Link>}
+      {!isAuthenticated && (
+        <div className="homepage-button-wrapper">
+          <Link href="/login">
+            <button>Login</button>
+          </Link>
+          <Link href="/register">
+            <button>Register</button>
+          </Link>
+        </div>
+      )}
+      {isAuthenticated && <Link href={`/profile/${user?.username}`}>Profile</Link>}
     </div>
   );
 }

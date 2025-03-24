@@ -1,8 +1,7 @@
 import { useState, useEffect } from "react";
-import validationSchema from "../validations/validationSchema";
 import * as Yup from "yup";
 
-const useForm = (initialData) => {
+const useForm = (initialData, validationSchema) => {
   const [formData, setFormData] = useState(initialData);
   const [errors, setErrors] = useState({});
   const [touched, setTouched] = useState({});
@@ -101,10 +100,11 @@ const useForm = (initialData) => {
     };
 
     checkFormValidity();
-  }, [formData]);
+  }, [formData, validationSchema]);
 
   return {
     formData,
+    setFormData,
     errors,
     touched,
     isSubmitting,
@@ -113,7 +113,6 @@ const useForm = (initialData) => {
     handleFocus,
     handleSubmit,
     resetForm,
-    setFormData,
   };
 };
 

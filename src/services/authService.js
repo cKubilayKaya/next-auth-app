@@ -9,9 +9,45 @@ export const loginService = async (data) => {
   }
 };
 
+export const registerService = async (data) => {
+  try {
+    const res = await axiosInstance.post("/auth/register", data);
+    return res.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const updateProfileService = async (data) => {
+  try {
+    const res = await axiosInstance.put("/auth/profile", data);
+    return res.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
 export const meService = async () => {
   try {
     const res = await axiosInstance.get("/auth/me");
+    return res.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const emailVerifyService = async (data) => {
+  try {
+    const res = await axiosInstance.post("/auth/email-verify", data);
+    return res.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const resendEmailService = async (data) => {
+  try {
+    const res = await axiosInstance.post("/auth/resend-email", data);
     return res.data;
   } catch (error) {
     throw error;

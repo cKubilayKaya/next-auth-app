@@ -12,6 +12,12 @@ const authSlice = createSlice({
   name: "auth",
   initialState,
   reducers: {
+    register: (state, action) => {
+      state.user = action.payload.user;
+      state.token = null;
+      state.isAuthenticated = false;
+      document.cookie = "token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Strict";
+    },
     login: (state, action) => {
       state.user = action.payload.user;
       state.token = action.payload.token;
@@ -27,7 +33,7 @@ const authSlice = createSlice({
   },
 });
 
-export const { login, logout } = authSlice.actions;
+export const { login, register, logout } = authSlice.actions;
 
 export const useAuth = () => {
   const dispatch = useDispatch();
@@ -38,12 +44,18 @@ export const useAuth = () => {
     },
     [dispatch]
   );
+  const registerAction = useCallback(
+    (userData) => {
+      dispatch(register(userData));
+    },
+    [dispatch]
+  );
 
   const logoutAction = useCallback(() => {
     dispatch(logout());
   }, [dispatch]);
 
-  return { loginAction, logoutAction };
+  return { loginAction, logoutAction, registerAction };
 };
 
 export default authSlice.reducer;
